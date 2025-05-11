@@ -23,18 +23,25 @@ public class MessageController {
             return;
         }
 
-        if (receiverNameDisplay.equalsIgnoreCase(currentUser.getNameDisplay())) {
-            messageView.showCannotMessageSelf();
-            return;
-        }
-
-        User receiver = userService.getByNameDisplay(receiverNameDisplay);
-        if (receiver == null) {
+        List<User> matchingUsers = userService.getUsersByNameDisplay(receiverNameDisplay);
+        if (matchingUsers.isEmpty()) {
             messageView.showUserNotFound();
             return;
         }
 
-        List<Message> chatHistory = userService.getMessages(currentUser, receiverNameDisplay);
+        messageView.showMatchingUsers(matchingUsers, currentUser);
+        int selectedIndex = messageView.getMatchingUserIndex(matchingUsers.size());
+        if (selectedIndex == 0) {
+            messageView.showNoActionTaken();
+            return;
+        }
+        if (selectedIndex < 1 || selectedIndex > matchingUsers.size()) {
+            messageView.showInvalidChoice();
+            return;
+        }
+
+        User receiver = matchingUsers.get(selectedIndex - 1);
+        List<Message> chatHistory = userService.getMessages(currentUser, receiver.getNameDisplay());
         messageView.showChatHistory(chatHistory, currentUser, receiver);
 
         String content = messageView.getMessageContentFromUser();
@@ -42,12 +49,12 @@ public class MessageController {
             return;
         }
 
-        if (userService.sendMessage(currentUser, receiverNameDisplay, content)) {
-            messageView.showMessageSent(receiverNameDisplay);
-            chatHistory = userService.getMessages(currentUser, receiverNameDisplay);
+        if (userService.sendMessage(currentUser, receiver.getNameDisplay(), content)) {
+            messageView.showMessageSent(receiver.getNameDisplay());
+            chatHistory = userService.getMessages(currentUser, receiver.getNameDisplay());
             messageView.showChatHistory(chatHistory, currentUser, receiver);
         } else {
-            messageView.showMessageSendFailed("Không thể gửi tin nhắn. Người dùng có thể không tồn tại.");
+            messageView.showMessageSendFailed("Không thể gửi tin nhắn. Vui lòng thử lại.");
         }
     }
 }

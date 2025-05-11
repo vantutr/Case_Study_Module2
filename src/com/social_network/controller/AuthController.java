@@ -6,13 +6,17 @@ import com.social_network.service.PasswordUtil;
 import com.social_network.service.UserService;
 import com.social_network.view.AuthView;
 import com.social_network.view.NotificationView;
-
 import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.Period;
 
 public class AuthController {
     private final UserService userService;
     private final AuthView authView;
     private final NotificationView notificationView;
+    private static final int MINIMUM_AGE = 18;
 
     public AuthController(UserService userService, AuthView authView, NotificationView notificationView) {
         this.userService = userService;
@@ -78,15 +82,31 @@ public class AuthController {
                 authView.showInvalidNameDisplayError();
                 continue;
             }
-            if (userService.getByNameDisplay(nameDisplay) != null) {
-                authView.showNameDisplayExistsError();
-                continue;
-            }
             break;
         }
 
         String description = authView.getDescriptionForInput();
         String hobbies = authView.getHobbiesForInput();
+
+        LocalDate dateOfBirth = null;
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        while (dateOfBirth == null) {
+            String dobInput = authView.getDateOfBirthInput();
+            if (dobInput.isEmpty()){
+                authView.showEmptyInputError("Ngày sinh");
+                continue;
+            }
+            try {
+                dateOfBirth = LocalDate.parse(dobInput, dateFormatter);
+                if (Period.between(dateOfBirth, LocalDate.now()).getYears() < MINIMUM_AGE){
+                    authView.showUnderageError();
+                    return;
+                }
+            }catch (DateTimeParseException e){
+                authView.showInvalidDateOfBirthError();
+            }
+        }
+
         String password;
         while (true) {
             password = authView.getPasswordForInput();
@@ -119,11 +139,11 @@ public class AuthController {
             break;
         }
 
-        boolean registered = userService.register(username, hashedPassword, question, answer, nameDisplay, description, hobbies);
+        boolean registered = userService.register(username, hashedPassword, question, answer, nameDisplay, description, hobbies, dateOfBirth);
         if (registered) {
             authView.showRegisterSuccess();
         } else {
-            authView.showNameDisplayOrUsernameExistsError();
+            authView.showUsernameExistsError();
         }
     }
 

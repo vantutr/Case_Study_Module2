@@ -1,6 +1,7 @@
 package com.social_network.model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +15,7 @@ public class User implements Serializable {
     private String nameDisplay;
     private String description;
     private String hobbies;
+    private LocalDate dateOfBirth;
     private List<String> friends;
     private List<String> friendRequests;
 
@@ -23,7 +25,7 @@ public class User implements Serializable {
     }
 
     public User(String username, String password, String securityQuestion, String securityAnswer,
-                String nameDisplay, String description, String hobbies) {
+                String nameDisplay, String description, String hobbies, LocalDate dateOfBirth) {
         this.username = username;
         this.password = password;
         this.securityQuestion = securityQuestion;
@@ -33,6 +35,15 @@ public class User implements Serializable {
         this.hobbies = hobbies;
         this.friends = new ArrayList<>();
         this.friendRequests = new ArrayList<>();
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getUsername() {
@@ -125,6 +136,7 @@ public class User implements Serializable {
         return "User{" +
                 "username='" + username + '\'' +
                 ", nameDisplay='" + nameDisplay + '\'' +
+                ", dateOfBirth=" + (dateOfBirth != null ? dateOfBirth.toString() : "N/A") +
                 '}';
     }
 }

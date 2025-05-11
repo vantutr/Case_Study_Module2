@@ -43,33 +43,30 @@ public class SocialController {
             socialView.showEmptyInputError("Tên người nhận");
             return;
         }
-        if (receiverNameDisplay.equalsIgnoreCase(currentUser.getNameDisplay())) {
-            socialView.showFriendRequestFailed("Bạn không thể gửi lời mời cho chính mình.");
-            return;
-        }
-        User receiver = userService.getByNameDisplay(receiverNameDisplay);
-        if (receiver == null) {
+
+        List<User> matchingUsers = userService.getUsersByNameDisplay(receiverNameDisplay);
+        if (matchingUsers.isEmpty()) {
             socialView.showUserNotFound();
             return;
         }
 
-        if (currentUser.getFriends().contains(receiver.getUsername())) {
-            socialView.showFriendRequestFailed(receiverNameDisplay + " đã là bạn của bạn.");
+        socialView.showMatchingUsers(matchingUsers, currentUser);
+        int selectedIndex = socialView.getMatchingUserIndex(matchingUsers.size());
+        if (selectedIndex == 0) {
+            socialView.showNoActionTaken();
             return;
         }
-        if (receiver.getFriendRequests().contains(currentUser.getUsername())) {
-            socialView.showFriendRequestFailed("Bạn đã gửi lời mời cho " + receiverNameDisplay + " trước đó.");
-            return;
-        }
-        if (currentUser.getFriendRequests().contains(receiver.getUsername())) {
-            socialView.showFriendRequestFailed(receiverNameDisplay + " đã gửi lời mời cho bạn. Hãy kiểm tra danh sách lời mời.");
+        if (selectedIndex < 1 || selectedIndex > matchingUsers.size()) {
+            socialView.showInvalidChoice();
             return;
         }
 
-        if (userService.sendFriendRequest(currentUser, receiverNameDisplay)) {
-            socialView.showFriendRequestSent(receiverNameDisplay);
+        User receiver = matchingUsers.get(selectedIndex - 1);
+        String error = userService.sendFriendRequest(currentUser, receiver.getUsername());
+        if (error == null) {
+            socialView.showFriendRequestSent(receiver);
         } else {
-            socialView.showFriendRequestFailed("Không thể gửi lời mời. Vui lòng thử lại.");
+            socialView.showFriendRequestFailed(error);
         }
     }
 

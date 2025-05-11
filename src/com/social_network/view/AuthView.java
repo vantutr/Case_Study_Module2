@@ -86,7 +86,7 @@ public class AuthView extends BaseView {
     }
 
     public void showLoginSuccess(String nameDisplay) {
-        System.out.println("Đăng nhập thành công. Chào mừng trở lại, " + nameDisplay.toUpperCase() + "!");
+        System.out.println("Đăng nhập thành công. Welcome, " + nameDisplay.toUpperCase() + "!");
     }
 
     public void showLoginFailure() {
@@ -119,5 +119,18 @@ public class AuthView extends BaseView {
 
     public void showExitMessage() {
         System.out.println("Cảm ơn bạn đã sử dụng ứng dụng. Tạm biệt!");
+    }
+
+    public String getDateOfBirthInput(){
+        System.out.println("Ngày sinh (dd/MM/yyyy): ");
+        return scanner.nextLine().trim();
+    }
+
+    public void showInvalidDateOfBirthError(){
+        System.out.println("Ngày sinh lỗi, vui lòng thử lại theo định dạng: dd/MM/yyyy");
+    }
+
+    public void showUnderageError() {
+        System.out.println("Lỗi: Từ 18 tuổi mới được đăng ký.");
     }
 }
