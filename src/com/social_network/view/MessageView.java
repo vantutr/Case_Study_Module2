@@ -67,7 +67,7 @@ public class MessageView extends BaseView {
         System.out.println("\n--- Cuộc trò chuyện với " + otherUser.getNameDisplay() + " ---");
         for (Message message : messages) {
             String prefix;
-            if (message.getSenderNameDisplay().equalsIgnoreCase(currentUser.getNameDisplay())) {
+            if (message.getSenderUsername().equalsIgnoreCase(currentUser.getUsername())) {
                 prefix = "Bạn";
             } else {
                 prefix = message.getSenderNameDisplay();

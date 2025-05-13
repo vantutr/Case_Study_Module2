@@ -12,15 +12,19 @@ public class Message implements Serializable {
     private int id;
     private String senderNameDisplay;
     private String receiverNameDisplay;
+    private String senderUsername;
+    private String receiverUsername;
     private String content;
     private LocalDateTime timestamp;
 
     public Message() {}
 
-    public Message(String senderNameDisplay, String receiverNameDisplay, String content) {
+    public Message(String senderNameDisplay, String receiverNameDisplay, String senderUsername, String receiverUsername, String content) {
         this.id = currentAutoId++;
         this.senderNameDisplay = senderNameDisplay;
         this.receiverNameDisplay = receiverNameDisplay;
+        this.senderUsername = senderUsername;
+        this.receiverUsername = receiverUsername;
         this.content = content;
         this.timestamp = LocalDateTime.now();
     }
@@ -32,7 +36,6 @@ public class Message implements Serializable {
     public static void setCurrentAutoId(int id) {
         currentAutoId = id;
     }
-
 
     public int getId() {
         return id;
@@ -56,6 +59,22 @@ public class Message implements Serializable {
 
     public void setReceiverNameDisplay(String receiverNameDisplay) {
         this.receiverNameDisplay = receiverNameDisplay;
+    }
+
+    public String getSenderUsername() {
+        return senderUsername;
+    }
+
+    public void setSenderUsername(String senderUsername) {
+        this.senderUsername = senderUsername;
+    }
+
+    public String getReceiverUsername() {
+        return receiverUsername;
+    }
+
+    public void setReceiverUsername(String receiverUsername) {
+        this.receiverUsername = receiverUsername;
     }
 
     public String getContent() {
@@ -90,7 +109,7 @@ public class Message implements Serializable {
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return String.format("Message ID: %d | From: %s | To: %s | Time: %s | Content: %s",
-                id, senderNameDisplay, receiverNameDisplay, timestamp.format(formatter), content);
+        return String.format("Message ID: %d | From: %s (@%s) | To: %s (@%s) | Time: %s | Content: %s",
+                id, senderNameDisplay, senderUsername, receiverNameDisplay, receiverUsername, timestamp.format(formatter), content);
     }
 }

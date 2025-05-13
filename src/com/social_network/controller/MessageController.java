@@ -41,7 +41,7 @@ public class MessageController {
         }
 
         User receiver = matchingUsers.get(selectedIndex - 1);
-        List<Message> chatHistory = userService.getMessages(currentUser, receiver.getNameDisplay());
+        List<Message> chatHistory = userService.getMessages(currentUser, receiver.getUsername());
         messageView.showChatHistory(chatHistory, currentUser, receiver);
 
         String content = messageView.getMessageContentFromUser();
@@ -49,9 +49,9 @@ public class MessageController {
             return;
         }
 
-        if (userService.sendMessage(currentUser, receiver.getNameDisplay(), content)) {
+        if (userService.sendMessage(currentUser, receiver.getUsername(), content)) {
             messageView.showMessageSent(receiver.getNameDisplay());
-            chatHistory = userService.getMessages(currentUser, receiver.getNameDisplay());
+            chatHistory = userService.getMessages(currentUser, receiver.getUsername());
             messageView.showChatHistory(chatHistory, currentUser, receiver);
         } else {
             messageView.showMessageSendFailed("Không thể gửi tin nhắn. Vui lòng thử lại.");
