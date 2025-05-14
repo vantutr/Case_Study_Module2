@@ -1,17 +1,17 @@
 package com.social_network.controller;
 
 import com.social_network.model.User;
-import com.social_network.service.UserService;
+import com.social_network.service.FriendService;
 import com.social_network.view.SocialView;
 
 import java.util.List;
 
 public class SocialController {
-    private final UserService userService;
+    private final FriendService friendService;
     private final SocialView socialView;
 
-    public SocialController(UserService userService, SocialView socialView) {
-        this.userService = userService;
+    public SocialController(FriendService friendService, SocialView socialView) {
+        this.friendService = friendService;
         this.socialView = socialView;
     }
 
@@ -26,7 +26,7 @@ public class SocialController {
                     handleFriendRequests(currentUser);
                     break;
                 case 3:
-                    List<User> friends = userService.getFriends(currentUser);
+                    List<User> friends = friendService.getFriends(currentUser);
                     socialView.showFriends(friends);
                     break;
                 case 0:
@@ -44,7 +44,7 @@ public class SocialController {
             return;
         }
 
-        List<User> matchingUsers = userService.getUsersByNameDisplay(receiverNameDisplay);
+        List<User> matchingUsers = friendService.getUsersByNameDisplay(receiverNameDisplay);
         if (matchingUsers.isEmpty()) {
             socialView.showUserNotFound();
             return;
@@ -62,7 +62,7 @@ public class SocialController {
         }
 
         User receiver = matchingUsers.get(selectedIndex - 1);
-        String error = userService.sendFriendRequest(currentUser, receiver.getUsername());
+        String error = friendService.sendFriendRequest(currentUser, receiver.getUsername());
         if (error == null) {
             socialView.showFriendRequestSent(receiver);
         } else {
@@ -71,7 +71,7 @@ public class SocialController {
     }
 
     private void handleFriendRequests(User currentUser) {
-        List<User> requests = userService.getFriendRequests(currentUser);
+        List<User> requests = friendService.getFriendRequests(currentUser);
         socialView.showFriendRequests(requests);
         if (requests.isEmpty()) {
             return;
@@ -86,14 +86,14 @@ public class SocialController {
         int actionChoice = socialView.getAcceptOrRejectChoice(sender);
         switch (actionChoice) {
             case 1:
-                if (userService.acceptFriendRequest(currentUser, sender.getUsername())) {
+                if (friendService.acceptFriendRequest(currentUser, sender.getUsername())) {
                     socialView.showFriendRequestAccepted(sender.getNameDisplay());
                 } else {
                     System.out.println("Lỗi: Không thể chấp nhận lời mời kết bạn.");
                 }
                 break;
             case 2:
-                if (userService.rejectFriendRequest(currentUser, sender.getUsername())) {
+                if (friendService.rejectFriendRequest(currentUser, sender.getUsername())) {
                     socialView.showFriendRequestRejected(sender.getNameDisplay());
                 } else {
                     System.out.println("Lỗi: Không thể từ chối lời mời kết bạn.");

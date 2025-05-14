@@ -2,21 +2,22 @@ package com.social_network.controller;
 
 import com.social_network.model.Notification;
 import com.social_network.model.User;
-import com.social_network.service.UserService;
+import com.social_network.service.NotificationService;
 import com.social_network.view.NotificationView;
+
 import java.util.List;
 
 public class NotificationController {
-    private final UserService userService;
+    private final NotificationService notificationService;
     private final NotificationView notificationView;
 
-    public NotificationController(UserService userService, NotificationView notificationView) {
-        this.userService = userService;
+    public NotificationController(NotificationService notificationService, NotificationView notificationView) {
+        this.notificationService = notificationService;
         this.notificationView = notificationView;
     }
 
     public void processNotificationsMenu(User currentUser) {
-        List<Notification> notifications = userService.getNotifications(currentUser);
+        List<Notification> notifications = notificationService.getNotifications(currentUser);
         notificationView.showNotifications(notifications);
 
         int choice = notificationView.showNotificationActionMenuAndGetChoice(!notifications.isEmpty());
@@ -34,7 +35,7 @@ public class NotificationController {
                     notificationView.showInvalidChoice(); break;
                 }
 
-                if (userService.deleteNotification(currentUser, notificationId)) {
+                if (notificationService.deleteNotification(currentUser, notificationId)) {
                     notificationView.showNotificationDeleted();
                 } else {
                     notificationView.showNotificationNotFound();
@@ -45,7 +46,7 @@ public class NotificationController {
                     notificationView.showInvalidChoice();
                     break;
                 }
-                userService.deleteAllNotifications(currentUser);
+                notificationService.deleteAllNotifications(currentUser);
                 notificationView.showAllNotificationsDeleted();
                 break;
             case 0:

@@ -2,16 +2,17 @@ package com.social_network.controller;
 
 import com.social_network.model.Post;
 import com.social_network.model.User;
-import com.social_network.service.UserService;
+import com.social_network.service.PostService;
 import com.social_network.view.PostView;
+
 import java.util.List;
 
 public class PostController {
-    private final UserService userService;
+    private final PostService postService;
     private final PostView postView;
 
-    public PostController(UserService userService, PostView postView) {
-        this.userService = userService;
+    public PostController(PostService postService, PostView postView) {
+        this.postService = postService;
         this.postView = postView;
     }
 
@@ -21,12 +22,12 @@ public class PostController {
             postView.showEmptyInputError("Nội dung bài đăng");
             return;
         }
-        userService.createPost(currentUser, content);
+        postService.createPost(currentUser, content);
         postView.showPostCreated();
     }
 
     public void processTimelineMenu(User currentUser) {
-        List<Post> timeline = userService.getTimeline(currentUser);
+        List<Post> timeline = postService.getTimeline(currentUser, currentUser.getFriends());
         postView.showTimeline(timeline, currentUser);
 
         if (timeline.isEmpty()) {
@@ -43,14 +44,13 @@ public class PostController {
                 if (postId < 0 && timeline.isEmpty()) { postView.showInvalidChoice(); break; }
                 else if (postId < 0) { postView.showInvalidChoice(); break;}
 
-                targetPost = userService.getPostById(postId);
+                targetPost = postService.getPostById(postId);
                 if (targetPost == null) {
                     postView.showPostNotFound();
                     break;
                 }
-                if (userService.likePost(currentUser, postId)) {
-                    User postAuthor = userService.getByUsername(targetPost.getAuthorUsername());
-                    postView.showPostLiked(postAuthor != null ? postAuthor.getNameDisplay() : targetPost.getAuthorUsername());
+                if (postService.likePost(currentUser, postId)) {
+                    postView.showPostLiked(targetPost.getAuthorUsername());
                 } else {
                     postView.showPostLikeFailed();
                 }
@@ -60,7 +60,7 @@ public class PostController {
                 if (postId < 0 && timeline.isEmpty()) { postView.showInvalidChoice(); break; }
                 else if (postId < 0) { postView.showInvalidChoice(); break;}
 
-                targetPost = userService.getPostById(postId);
+                targetPost = postService.getPostById(postId);
                 if (targetPost == null) {
                     postView.showPostNotFound();
                     break;
@@ -70,9 +70,8 @@ public class PostController {
                     postView.showEmptyInputError("Nội dung bình luận");
                     break;
                 }
-                if (userService.commentPost(currentUser, postId, commentContent)) {
-                    User postAuthor = userService.getByUsername(targetPost.getAuthorUsername());
-                    postView.showCommentAdded(postAuthor != null ? postAuthor.getNameDisplay() : targetPost.getAuthorUsername());
+                if (postService.commentPost(currentUser, postId, commentContent)) {
+                    postView.showCommentAdded(targetPost.getAuthorUsername());
                 } else {
                     postView.showCommentFailed();
                 }
@@ -82,7 +81,7 @@ public class PostController {
                 if (postId < 0 && timeline.isEmpty()) { postView.showInvalidChoice(); break; }
                 else if (postId < 0) { postView.showInvalidChoice(); break;}
 
-                targetPost = userService.getPostById(postId);
+                targetPost = postService.getPostById(postId);
                 if (targetPost == null) {
                     postView.showPostNotFound();
                     break;
@@ -96,7 +95,7 @@ public class PostController {
                     postView.showEmptyInputError("Nội dung bài đăng mới");
                     break;
                 }
-                if (userService.editPost(currentUser, postId, newPostContent)) {
+                if (postService.editPost(currentUser, postId, newPostContent)) {
                     postView.showPostEdited();
                 } else {
                     postView.showActionNotAllowed();
@@ -107,7 +106,7 @@ public class PostController {
                 if (postId < 0 && timeline.isEmpty()) { postView.showInvalidChoice(); break; }
                 else if (postId < 0) { postView.showInvalidChoice(); break;}
 
-                targetPost = userService.getPostById(postId);
+                targetPost = postService.getPostById(postId);
                 if (targetPost == null) {
                     postView.showPostNotFound();
                     break;
@@ -116,7 +115,7 @@ public class PostController {
                     postView.showActionNotAllowed();
                     break;
                 }
-                if (userService.deletePost(currentUser, postId)) {
+                if (postService.deletePost(currentUser, postId)) {
                     postView.showPostDeleted();
                 } else {
                     postView.showActionNotAllowed();

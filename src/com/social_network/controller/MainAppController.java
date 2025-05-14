@@ -1,12 +1,17 @@
 package com.social_network.controller;
 
 import com.social_network.model.User;
-import com.social_network.service.UserService;
+import com.social_network.service.*;
 import com.social_network.view.*;
+
 import java.util.Scanner;
 
 public class MainAppController {
     private final UserService userService;
+    private final PostService postService;
+    private final MessageService messageService;
+    private final NotificationService notificationService;
+    private final FriendService friendService;
     private User currentUser;
 
     private final AuthView authView;
@@ -23,25 +28,29 @@ public class MainAppController {
     private final MessageController messageController;
     private final NotificationController notificationController;
 
-    public MainAppController(UserService userService) {
-        this.userService = userService;
+    public MainAppController() {
+        this.notificationService = new NotificationService();
+        this.userService = new UserService();
+        this.postService = new PostService(notificationService);
+        this.messageService = new MessageService(notificationService);
+        this.friendService = new FriendService(notificationService);
         this.currentUser = null;
 
         Scanner sharedScanner = new Scanner(System.in);
 
         this.authView = new AuthView(sharedScanner);
-        this.mainMenuView = new MainMenuView(sharedScanner, userService);
+        this.mainMenuView = new MainMenuView(sharedScanner, userService, notificationService);
         this.profileView = new ProfileView(sharedScanner);
         this.socialView = new SocialView(sharedScanner);
         this.postView = new PostView(sharedScanner, userService);
         this.messageView = new MessageView(sharedScanner, userService);
         this.notificationView = new NotificationView(sharedScanner);
-        this.authController = new AuthController(userService, authView, notificationView);
+        this.authController = new AuthController(userService, notificationService, authView, notificationView);
         this.profileController = new ProfileController(userService, profileView);
-        this.socialController = new SocialController(userService, socialView);
-        this.postController = new PostController(userService, postView);
-        this.messageController = new MessageController(userService, messageView);
-        this.notificationController = new NotificationController(userService, notificationView);
+        this.socialController = new SocialController(friendService, socialView);
+        this.postController = new PostController(postService, postView);
+        this.messageController = new MessageController(messageService, messageView, userService);
+        this.notificationController = new NotificationController(notificationService, notificationView);
     }
 
     public void start() {

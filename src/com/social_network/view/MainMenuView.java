@@ -2,20 +2,22 @@ package com.social_network.view;
 
 import com.social_network.model.User;
 import com.social_network.service.UserService;
-import com.social_network.view.BaseView;
+import com.social_network.service.NotificationService;
 
 import java.util.Scanner;
 
 public class MainMenuView extends BaseView {
     private final UserService userService;
+    private final NotificationService notificationService;
 
-    public MainMenuView(Scanner scanner, UserService userService) {
+    public MainMenuView(Scanner scanner, UserService userService, NotificationService notificationService) {
         super(scanner);
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     public int showUserMenuAndGetChoice(User user) {
-        long notificationCount = userService.getNotifications(user).size();
+        long notificationCount = notificationService.getNotifications(user).size();
         System.out.println("\n===== CHÀO " + user.getNameDisplay().toUpperCase() + " =====");
         System.out.println("1. Hồ sơ cá nhân");
         System.out.println("2. Kết bạn và mạng lưới xã hội");
