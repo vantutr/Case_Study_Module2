@@ -35,6 +35,12 @@ public class AuthController {
             return;
         }
 
+        User existingUser = userService.getByUsername(username);
+        if (existingUser != null) {
+            authView.showUsernameExistsError();
+            return;
+        }
+
         String nameDisplay = authView.getNameDisplayForInput();
         if (nameDisplay.isEmpty()) {
             authView.showEmptyInputError("Tên hiển thị");
@@ -59,13 +65,6 @@ public class AuthController {
                 authView.showInvalidDateOfBirthError();
                 return;
             }
-        }
-
-        User existingUser = userService.getByUsername(username);
-        User existingNameDisplay = userService.getByNameDisplay(nameDisplay);
-        if (existingUser != null || existingNameDisplay != null) {
-            authView.showNameDisplayOrUsernameExistsError();
-            return;
         }
 
         String password = authView.getPasswordForInput();

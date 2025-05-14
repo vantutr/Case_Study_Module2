@@ -60,14 +60,6 @@ public class AuthView extends BaseView {
         System.out.println("Lỗi: Tên đăng nhập đã tồn tại! Vui lòng chọn tên khác.");
     }
 
-    public void showNameDisplayExistsError() {
-        System.out.println("Lỗi: Tên hiển thị đã tồn tại! Vui lòng chọn tên khác.");
-    }
-
-    public void showNameDisplayOrUsernameExistsError() {
-        System.out.println("Lỗi: Tên đăng nhập hoặc Tên hiển thị đã tồn tại! Vui lòng chọn thông tin khác.");
-    }
-
     public void showInvalidNameDisplayError() {
         System.out.println("Tên hiển thị không hợp lệ! Phải có dạng 'FirstName LastName...' và chỉ chứa chữ cái, số, và khoảng trắng.");
     }
